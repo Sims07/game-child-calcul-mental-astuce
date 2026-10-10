@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Maths Flash CE2 - Le Club des Astuces</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Fredoka', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            purple: '#6C5CE7',
+                            pink: '#FD79A8',
+                            yellow: '#FFEAA7',
+                            green: '#00B894',
+                            blue: '#0984E3',
+                            bg: '#F0F3F8'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Fredoka', sans-serif;
+            background-color: #F0F3F8;
+            user-select: none;
+            padding-bottom: max(1rem, env(safe-area-inset-bottom));
+        }
+        header {
+            padding-top: max(0.75rem, env(safe-area-inset-top));
+        }
+        .bounce-short {
+            animation: bounce 0.5s ease;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .card-shadow {
+            box-shadow: 0 10px 25px -5px rgba(108, 92, 231, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between text-slate-800">
+
+    <!-- Header / Navbar -->
+    <header class="bg-white border-b-4 border-brand-purple/20 px-3 py-2 md:px-4 md:py-3 sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-2 md:gap-3">
+                <div class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-brand-purple text-white flex items-center justify-center text-xl md:text-2xl font-bold shadow-md">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg md:text-2xl font-bold text-brand-purple leading-tight">Maths Flash CE2</h1>
+                    <p class="text-[10px] md:text-xs text-slate-500">Deviens une reine du calcul ! ✨</p>
+                </div>
+            </div>
+
+            <!-- Score & Stars counter -->
+            <div class="flex items-center gap-2 md:gap-3 bg-brand-yellow/40 px-3 py-1.5 md:px-4 md:py-2 rounded-2xl border-2 border-brand-yellow">
+                <i class="fa-solid fa-star text-amber-500 text-lg md:text-2xl animate-pulse"></i>
+                <div class="text-right">
+                    <span id="starCount" class="text-lg md:text-xl font-bold text-slate-800">0</span>
+                    <span class="text-[10px] md:text-xs block text-slate-600 font-semibold leading-none">Étoiles</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto w-full p-3 md:p-4 flex-grow flex flex-col gap-4 md:gap-6">
+
+        <!-- Navigation Tabs -->
+        <nav class="grid grid-cols-3 gap-1.5 md:gap-4">
+            <button onclick="switchMode('learn')" id="tab-learn" class="tab-btn active px-2 py-2.5 md:px-5 md:py-3 rounded-2xl font-bold text-xs md:text-base transition-all flex items-center justify-center gap-1 md:gap-2 bg-brand-purple text-white shadow-lg text-center">
+                <i class="fa-solid fa-lightbulb text-sm md:text-base"></i> <span>1. Astuces</span>
+            </button>
+            <button onclick="switchMode('guided')" id="tab-guided" class="tab-btn px-2 py-2.5 md:px-5 md:py-3 rounded-2xl font-bold text-xs md:text-base transition-all flex items-center justify-center gap-1 md:gap-2 bg-white text-slate-600 hover:bg-slate-100 shadow text-center">
+                <i class="fa-solid fa-shoe-prints text-sm md:text-base"></i> <span>2. Pas à pas</span>
+            </button>
+            <button onclick="switchMode('speed')" id="tab-speed" class="tab-btn px-2 py-2.5 md:px-5 md:py-3 rounded-2xl font-bold text-xs md:text-base transition-all flex items-center justify-center gap-1 md:gap-2 bg-white text-slate-600 hover:bg-slate-100 shadow text-center">
+                <i class="fa-solid fa-bolt text-amber-500 text-sm md:text-base"></i> <span>3. Rapide</span>
+            </button>
+        </nav>
+
+        <!-- MODE 1: LESSONS & EXPLANATIONS -->
+        <section id="section-learn" class="space-y-4 md:space-y-6">
+            <div class="bg-white p-4 md:p-6 rounded-3xl card-shadow border-2 border-slate-100">
+                <div class="flex items-center gap-2 md:gap-3 mb-3">
+                    <span class="bg-brand-purple/10 text-brand-purple p-2.5 md:p-3 rounded-xl"><i class="fa-solid fa-bullseye text-lg md:text-xl"></i></span>
+                    <h2 class="text-lg md:text-xl font-bold text-slate-800">Passer par la dizaine</h2>
+                </div>
+                <p class="text-xs md:text-sm text-slate-600 mb-4 leading-relaxed">
+                    Pour calculer <strong class="text-brand-purple font-bold">27 + 8</strong> : on fabrique la dizaine suivante (<strong class="text-emerald-600">30</strong>) d'abord !
+                </p>
+
+                <!-- Interactive Visual Example -->
+                <div class="bg-indigo-50/60 p-4 md:p-6 rounded-2xl border-2 border-indigo-100 flex flex-col items-center gap-4">
+                    <div class="text-3xl md:text-4xl font-extrabold text-slate-800 flex items-center gap-2 md:gap-3">
+                        <span class="bg-white px-3 py-1.5 rounded-xl shadow-sm text-brand-purple">27</span>
+                        <span>+</span>
+                        <span class="bg-amber-100 text-amber-700 px-3 py-1.5 rounded-xl shadow-sm border border-amber-300">8</span>
+                    </div>
+
+                    <div class="w-full max-w-md bg-white p-3 md:p-4 rounded-xl border border-indigo-100 shadow-sm space-y-2.5">
+                        <p class="text-xs md:text-sm text-indigo-900 font-bold flex items-center gap-2">
+                            <span class="bg-brand-purple text-white w-5 h-5 rounded-full inline-flex items-center justify-center text-[10px] shrink-0">1</span>
+                            Pour aller à 30 ?
+                        </p>
+                        <div class="flex items-center justify-center gap-2 text-base md:text-lg font-bold text-brand-purple bg-purple-50 py-1.5 rounded-lg">
+                            27 + <span class="text-emerald-600 font-black underline">3</span> = 30
+                        </div>
+
+                        <p class="text-xs md:text-sm text-indigo-900 font-bold flex items-center gap-2 pt-1">
+                            <span class="bg-brand-purple text-white w-5 h-5 rounded-full inline-flex items-center justify-center text-[10px] shrink-0">2</span>
+                            Reste dans 8 ?
+                        </p>
+                        <div class="flex items-center justify-center gap-2 text-base md:text-lg font-bold text-amber-600 bg-amber-50 py-1.5 rounded-lg">
+                            8, c'est <span class="text-emerald-600 font-black">3</span> + <span class="text-brand-pink font-black underline">5</span>
+                        </div>
+
+                        <p class="text-xs md:text-sm text-indigo-900 font-bold flex items-center gap-2 pt-1">
+                            <span class="bg-brand-purple text-white w-5 h-5 rounded-full inline-flex items-center justify-center text-[10px] shrink-0">3</span>
+                            Ajoute le reste !
+                        </p>
+                        <div class="flex items-center justify-center gap-2 text-lg md:text-xl font-extrabold text-emerald-600 bg-emerald-50 py-1.5 rounded-lg">
+                            30 + 5 = 35 ! 🎉
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other Tricks Grid -->
+            <div class="grid md:grid-cols-2 gap-3 md:gap-4">
+                <div class="bg-white p-4 rounded-2xl card-shadow border border-slate-100 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2 text-brand-pink font-bold text-sm md:text-base">
+                            <i class="fa-solid fa-magic"></i> L'Astuce du +9
+                        </div>
+                        <button onclick="startGuidedWithStrategy('plus9')" class="text-[11px] bg-pink-100 text-pink-700 hover:bg-pink-200 font-bold px-2.5 py-1 rounded-lg transition">
+                            Pas à pas ➔
+                        </button>
+                    </div>
+                    <p class="text-xs md:text-sm text-slate-600">
+                        Pour <strong class="text-slate-800">27 + 9</strong> : fais <span class="font-bold text-brand-purple">27 + 10 = 37</span>, puis enlève 1 : <span class="font-bold text-emerald-600">36</span> !
+                    </p>
+                </div>
+                <div class="bg-white p-4 rounded-2xl card-shadow border border-slate-100 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2 text-brand-blue font-bold text-sm md:text-base">
+                            <i class="fa-solid fa-bolt"></i> L'Astuce du +8
+                        </div>
+                        <button onclick="startGuidedWithStrategy('plus8')" class="text-[11px] bg-blue-100 text-blue-700 hover:bg-blue-200 font-bold px-2.5 py-1 rounded-lg transition">
+                            Pas à pas ➔
+                        </button>
+                    </div>
+                    <p class="text-xs md:text-sm text-slate-600">
+                        Pour <strong class="text-slate-800">27 + 8</strong> : fais <span class="font-bold text-brand-purple">27 + 10 = 37</span>, puis enlève 2 : <span class="font-bold text-emerald-600">35</span> !
+                    </p>
+                </div>
+            </div>
+
+            <div class="text-center pt-1">
+                <button onclick="switchMode('guided')" class="w-full md:w-auto bg-brand-green hover:bg-emerald-600 text-white font-bold px-6 py-3.5 rounded-2xl text-base md:text-lg shadow-lg transition">
+                    Entraînement pas à pas ! <i class="fa-solid fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- MODE 2: STEP-BY-STEP GUIDED PRACTICE -->
+        <section id="section-guided" class="hidden space-y-4 md:space-y-6">
+            <div class="bg-white p-4 md:p-8 rounded-3xl card-shadow border-2 border-slate-100 relative">
+                
+                <!-- Progress Header -->
+                <div class="flex items-center justify-between mb-3 border-b pb-3">
+                    <span class="text-xs font-bold text-brand-purple uppercase tracking-wider">
+                        <i class="fa-solid fa-compass"></i> Entraînement Guidé
+                    </span>
+                    <span id="guidedStreak" class="bg-emerald-100 text-emerald-700 text-xs font-bold px-2.5 py-0.5 rounded-full">
+                        Série : 0 🔥
+                    </span>
+                </div>
+
+                <!-- Strategy Choice Pills -->
+                <div class="grid grid-cols-2 sm:flex sm:flex-wrap justify-center gap-1.5 md:gap-2 mb-4">
+                    <button onclick="setGuidedStrategy('mixed')" id="strat-btn-mixed" class="strat-btn text-[11px] md:text-xs font-bold px-2.5 py-2 rounded-xl bg-brand-purple text-white shadow">
+                        🎲 Tout mélanger
+                    </button>
+                    <button onclick="setGuidedStrategy('ten')" id="strat-btn-ten" class="strat-btn text-[11px] md:text-xs font-bold px-2.5 py-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200">
+                        🎯 Vers la dizaine
+                    </button>
+                    <button onclick="setGuidedStrategy('plus9')" id="strat-btn-plus9" class="strat-btn text-[11px] md:text-xs font-bold px-2.5 py-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200">
+                        ⚡ Astuce du +9
+                    </button>
+                    <button onclick="setGuidedStrategy('plus8')" id="strat-btn-plus8" class="strat-btn text-[11px] md:text-xs font-bold px-2.5 py-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200">
+                        ⚡ Astuce du +8
+                    </button>
+                </div>
+
+                <!-- Strategy Tag Badge -->
+                <div class="text-center mb-2">
+                    <span id="guidedStrategyBadge" class="inline-block text-[11px] md:text-xs font-bold px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
+                        Astuce : Passage à la dizaine
+                    </span>
+                </div>
+
+                <!-- Main Target Problem -->
+                <div class="text-center my-2">
+                    <div class="text-xs font-semibold text-slate-500 mb-0.5">Calcul à réaliser :</div>
+                    <div id="guidedMathProblem" class="text-4xl md:text-6xl font-black text-brand-purple tracking-wide">
+                        27 + 8
+                    </div>
+                </div>
+
+                <!-- Guided Wizard Box -->
+                <div class="bg-slate-50 p-4 md:p-6 rounded-2xl border-2 border-slate-200 mt-4 space-y-4">
+                    
+                    <!-- Step 1 -->
+                    <div id="guidedStep1" class="space-y-2">
+                        <label id="labelStep1" class="block text-slate-700 font-bold text-xs md:text-base">
+                            1. Combien manque-t-il à <span id="gNum1Step1" class="text-brand-purple font-black">27</span> pour atteindre <span id="gNextTen" class="text-emerald-600 font-black">30</span> ?
+                        </label>
+                        <div class="flex items-center gap-2 max-w-xs mx-auto sm:mx-0">
+                            <input type="number" id="inputStep1" placeholder="?" class="w-full text-center text-xl font-bold py-2.5 border-2 border-slate-300 rounded-xl focus:border-brand-purple focus:outline-none" onkeydown="if(event.key==='Enter') checkGuidedStep(1)">
+                            <button onclick="checkGuidedStep(1)" class="bg-brand-purple text-white px-5 py-2.5 rounded-xl font-bold hover:bg-indigo-700 transition shrink-0">
+                                OK
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 (hidden initially) -->
+                    <div id="guidedStep2" class="space-y-2 hidden border-t pt-3 border-slate-200">
+                        <label id="labelStep2" class="block text-slate-700 font-bold text-xs md:text-base">
+                            2. Super ! Combien reste-t-il dans le <span id="gNum2Step2" class="text-amber-600 font-black">8</span> ?
+                        </label>
+                        <div class="flex items-center gap-2 max-w-xs mx-auto sm:mx-0">
+                            <input type="number" id="inputStep2" placeholder="?" class="w-full text-center text-xl font-bold py-2.5 border-2 border-slate-300 rounded-xl focus:border-brand-purple focus:outline-none" onkeydown="if(event.key==='Enter') checkGuidedStep(2)">
+                            <button onclick="checkGuidedStep(2)" class="bg-brand-purple text-white px-5 py-2.5 rounded-xl font-bold hover:bg-indigo-700 transition shrink-0">
+                                OK
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 (hidden initially) -->
+                    <div id="guidedStep3" class="space-y-2 hidden border-t pt-3 border-slate-200">
+                        <label id="labelStep3" class="block text-slate-700 font-bold text-xs md:text-base">
+                            3. Bravo ! Maintenant fais : <span id="gNextTenFinal" class="text-emerald-600 font-black">30</span> + <span id="gRemainderVal" class="text-brand-pink font-black">5</span> = ?
+                        </label>
+                        <div class="flex items-center gap-2 max-w-xs mx-auto sm:mx-0">
+                            <input type="number" id="inputStep3" placeholder="?" class="w-full text-center text-xl font-bold py-2.5 border-2 border-slate-300 rounded-xl focus:border-brand-purple focus:outline-none" onkeydown="if(event.key==='Enter') checkGuidedStep(3)">
+                            <button onclick="checkGuidedStep(3)" class="bg-brand-green text-white px-5 py-2.5 rounded-xl font-bold hover:bg-emerald-600 transition shrink-0">
+                                Valider ! 🌟
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Feedback message -->
+                    <div id="guidedFeedback" class="hidden p-3 rounded-xl font-bold text-center text-xs md:text-sm"></div>
+                </div>
+
+                <!-- Next exercise button -->
+                <div class="mt-4 text-right">
+                    <button id="btnNextGuided" onclick="generateGuidedProblem()" class="w-full sm:w-auto bg-brand-purple hover:bg-indigo-700 text-white font-bold px-5 py-3 rounded-xl shadow transition">
+                        Calcul suivant <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODE 3: SPEED & FREE PRACTICE -->
+        <section id="section-speed" class="hidden space-y-4 md:space-y-6">
+            <div class="bg-white p-4 md:p-8 rounded-3xl card-shadow border-2 border-slate-100 text-center relative">
+                
+                <div class="flex items-center justify-between mb-4 border-b pb-3">
+                    <span class="text-xs font-bold text-amber-600 uppercase tracking-wider">
+                        <i class="fa-solid fa-bolt"></i> Mode Défi Rapide
+                    </span>
+                    <span id="speedScore" class="bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-0.5 rounded-full">
+                        Score : 0
+                    </span>
+                </div>
+
+                <div class="py-2">
+                    <div class="text-xs text-slate-500 font-semibold mb-1">Combien font :</div>
+                    <div id="speedMathProblem" class="text-5xl md:text-7xl font-black text-slate-800 tracking-tight my-2">
+                        27 + 8
+                    </div>
+                </div>
+
+                <!-- Answer input -->
+                <div class="max-w-xs mx-auto space-y-3">
+                    <input type="number" id="speedAnswerInput" placeholder="Réponse ?" class="w-full text-center text-2xl md:text-3xl font-black py-3 border-4 border-brand-purple/30 rounded-2xl focus:border-brand-purple focus:outline-none shadow-inner" onkeydown="if(event.key==='Enter') checkSpeedAnswer()">
+                    <button onclick="checkSpeedAnswer()" class="w-full bg-brand-purple hover:bg-indigo-700 text-white text-lg font-bold py-3.5 rounded-2xl shadow-lg transition active:scale-95">
+                        Valider !
+                    </button>
+                </div>
+
+                <!-- Hint / Visual Trick Modal Helper -->
+                <div id="speedTrickBox" class="hidden mt-4 bg-amber-50 border-2 border-amber-200 p-3.5 rounded-2xl text-left space-y-1">
+                    <div class="font-bold text-xs md:text-sm text-amber-800 flex items-center gap-1.5">
+                        <i class="fa-solid fa-lightbulb"></i> Indice d'astuce :
+                    </div>
+                    <p id="speedTrickText" class="text-xs text-amber-900 leading-relaxed"></p>
+                </div>
+
+                <div class="mt-3">
+                    <button onclick="toggleSpeedHint()" class="text-xs font-bold text-slate-400 hover:text-brand-purple underline">
+                        💡 Revoir l'astuce pour ce calcul
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-3 text-center text-[11px] text-slate-400">
+        Maths Flash CE2 - Conçu pour iPhone & Web 🚀
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Global state variables
+        let stars = parseInt(localStorage.getItem('math_stars') || '0');
+        let currentMode = 'learn';
+        
+        // Guided state
+        let currentGuidedStrategy = 'mixed'; // 'ten', 'plus9', 'plus8', 'mixed'
+        let currentGuided = { activeStrat: 'ten', num1: 27, num2: 8, nextTen: 30, complement: 3, remainder: 5, total: 35 };
+        let guidedStreakCount = 0;
+
+        // Speed state
+        let currentSpeed = { num1: 27, num2: 8, total: 35, trickType: 'ten' };
+        let speedScoreCount = 0;
+
+        // Audio Effects using Web Audio API (No external assets required)
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            const now = audioCtx.currentTime;
+
+            if (type === 'correct') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(523.25, now); // C5
+                osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.15); // E5
+                osc.frequency.exponentialRampToValueAtTime(783.99, now + 0.3); // G5
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                osc.start(now);
+                osc.stop(now + 0.4);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, now); // A3
+                osc.frequency.exponentialRampToValueAtTime(174.61, now + 0.2); // F3
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            } else if (type === 'star') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, now); // A5
+                osc.frequency.exponentialRampToValueAtTime(1760, now + 0.2); // A6
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            }
+        }
+
+        function updateStarDisplay() {
+            document.getElementById('starCount').innerText = stars;
+            localStorage.setItem('math_stars', stars.toString());
+        }
+
+        function addStars(amount) {
+            stars += amount;
+            updateStarDisplay();
+            playSound('star');
+            confetti({
+                particleCount: 40,
+                spread: 60,
+                origin: { y: 0.2 }
+            });
+        }
+
+        function switchMode(mode) {
+            currentMode = mode;
+            ['learn', 'guided', 'speed'].forEach(m => {
+                const sec = document.getElementById(`section-${m}`);
+                const tab = document.getElementById(`tab-${m}`);
+                if (m === mode) {
+                    sec.classList.remove('hidden');
+                    tab.classList.add('bg-brand-purple', 'text-white', 'shadow-lg');
+                    tab.classList.remove('bg-white', 'text-slate-600');
+                } else {
+                    sec.classList.add('hidden');
+                    tab.classList.remove('bg-brand-purple', 'text-white', 'shadow-lg');
+                    tab.classList.add('bg-white', 'text-slate-600');
+                }
+            });
+
+            if (mode === 'guided') generateGuidedProblem();
+            if (mode === 'speed') generateSpeedProblem();
+        }
+
+        function startGuidedWithStrategy(strat) {
+            switchMode('guided');
+            setGuidedStrategy(strat);
+        }
+
+        function setGuidedStrategy(strat) {
+            currentGuidedStrategy = strat;
+            
+            // Update buttons style
+            ['mixed', 'ten', 'plus9', 'plus8'].forEach(s => {
+                const btn = document.getElementById(`strat-btn-${s}`);
+                if (s === strat) {
+                    btn.className = "strat-btn text-xs md:text-sm font-bold px-3 py-2 rounded-xl bg-brand-purple text-white shadow";
+                } else {
+                    btn.className = "strat-btn text-xs md:text-sm font-bold px-3 py-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200";
+                }
+            });
+
+            generateGuidedProblem();
+        }
+
+        function generateGuidedProblem() {
+            // Determine active strategy
+            let activeStrat = currentGuidedStrategy;
+            if (activeStrat === 'mixed') {
+                const strats = ['ten', 'plus9', 'plus8'];
+                activeStrat = strats[Math.floor(Math.random() * strats.length)];
+            }
+
+            let num1, num2, nextTen, complement, remainder, total;
+
+            const baseTens = [14, 17, 18, 25, 26, 27, 28, 35, 36, 37, 38, 46, 47, 58, 67, 78];
+
+            if (activeStrat === 'plus9') {
+                num1 = baseTens[Math.floor(Math.random() * baseTens.length)];
+                num2 = 9;
+                total = num1 + 9;
+                
+                document.getElementById('guidedStrategyBadge').innerText = "Astuce : Le +9 magique (+10 puis -1)";
+                document.getElementById('labelStep1').innerHTML = `1. Pour ajouter 9 facilement, on ajoute d'abord 10 ! Combien font <span class="text-brand-purple font-black">${num1}</span> + 10 ?`;
+                document.getElementById('labelStep2').innerHTML = `2. Tu as fait +10 au lieu de +9 (c'est 1 de trop). Combien dois-tu enlever à <span class="text-brand-purple font-black">${num1 + 10}</span> ?`;
+                document.getElementById('labelStep3').innerHTML = `3. Exactement ! Maintenant calcule : <span class="text-brand-purple font-black">${num1 + 10}</span> - 1 = ?`;
+
+            } else if (activeStrat === 'plus8') {
+                num1 = baseTens[Math.floor(Math.random() * baseTens.length)];
+                num2 = 8;
+                total = num1 + 8;
+
+                document.getElementById('guidedStrategyBadge').innerText = "Astuce : Le +8 éclair (+10 puis -2)";
+                document.getElementById('labelStep1').innerHTML = `1. Pour ajouter 8 facilement, on ajoute d'abord 10 ! Combien font <span class="text-brand-purple font-black">${num1}</span> + 10 ?`;
+                document.getElementById('labelStep2').innerHTML = `2. Tu as fait +10 au lieu de +8 (c'est 2 de trop). Combien dois-tu enlever à <span class="text-brand-purple font-black">${num1 + 10}</span> ?`;
+                document.getElementById('labelStep3').innerHTML = `3. Exactement ! Maintenant calcule : <span class="text-brand-purple font-black">${num1 + 10}</span> - 2 = ?`;
+
+            } else {
+                // 'ten' - Passage à la dizaine
+                num1 = baseTens[Math.floor(Math.random() * baseTens.length)];
+                nextTen = Math.ceil((num1 + 1) / 10) * 10;
+                complement = nextTen - num1;
+                num2 = complement + Math.floor(Math.random() * 4) + 1; // ensures remainder > 0
+                remainder = num2 - complement;
+                total = num1 + num2;
+
+                document.getElementById('guidedStrategyBadge').innerText = "Astuce : Passage par la dizaine";
+                document.getElementById('labelStep1').innerHTML = `1. Combien manque-t-il à <span class="text-brand-purple font-black">${num1}</span> pour atteindre la dizaine suivante (<span class="text-emerald-600 font-black">${nextTen}</span>) ?`;
+                document.getElementById('labelStep2').innerHTML = `2. Super ! Tu as pris <span class="text-brand-purple font-black">${complement}</span>. Combien reste-t-il dans le <span class="text-amber-600 font-black">${num2}</span> ?`;
+                document.getElementById('labelStep3').innerHTML = `3. Bravo ! Maintenant fais : <span class="text-emerald-600 font-black">${nextTen}</span> + <span class="text-brand-pink font-black">${remainder}</span> = ?`;
+            }
+
+            currentGuided = { activeStrat, num1, num2, nextTen, complement, remainder, total };
+
+            // Reset UI
+            document.getElementById('guidedMathProblem').innerText = `${num1} + ${num2}`;
+            document.getElementById('inputStep1').value = '';
+            document.getElementById('inputStep2').value = '';
+            document.getElementById('inputStep3').value = '';
+
+            document.getElementById('guidedStep1').classList.remove('hidden');
+            document.getElementById('guidedStep2').classList.add('hidden');
+            document.getElementById('guidedStep3').classList.add('hidden');
+
+            document.getElementById('guidedFeedback').classList.add('hidden');
+            document.getElementById('btnNextGuided').classList.add('hidden');
+
+            document.getElementById('inputStep1').focus();
+        }
+
+        function checkGuidedStep(step) {
+            const feedback = document.getElementById('guidedFeedback');
+            feedback.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-emerald-100', 'text-emerald-700');
+            const g = currentGuided;
+
+            if (step === 1) {
+                const val = parseInt(document.getElementById('inputStep1').value);
+                let expected = (g.activeStrat === 'plus9' || g.activeStrat === 'plus8') ? (g.num1 + 10) : g.complement;
+
+                if (val === expected) {
+                    playSound('correct');
+                    feedback.classList.add('bg-emerald-100', 'text-emerald-700');
+                    if (g.activeStrat === 'plus9' || g.activeStrat === 'plus8') {
+                        feedback.innerHTML = `Bravo ! ${g.num1} + 10 = ${g.num1 + 10} 👏`;
+                    } else {
+                        feedback.innerHTML = `Bravo ! ${g.num1} + ${g.complement} = ${g.nextTen} 🎉`;
+                    }
+
+                    document.getElementById('guidedStep2').classList.remove('hidden');
+                    document.getElementById('inputStep2').focus();
+                } else {
+                    playSound('wrong');
+                    feedback.classList.add('bg-red-100', 'text-red-700');
+                    if (g.activeStrat === 'plus9' || g.activeStrat === 'plus8') {
+                        feedback.innerText = `Oups ! Réessaie : combien font ${g.num1} + 10 ?`;
+                    } else {
+                        feedback.innerText = `Oups ! Réessaie : de ${g.num1} pour aller à ${g.nextTen}, il manque combien ?`;
+                    }
+                }
+            } else if (step === 2) {
+                const val = parseInt(document.getElementById('inputStep2').value);
+                let expected = g.activeStrat === 'plus9' ? 1 : (g.activeStrat === 'plus8' ? 2 : g.remainder);
+
+                if (val === expected) {
+                    playSound('correct');
+                    feedback.classList.add('bg-emerald-100', 'text-emerald-700');
+                    if (g.activeStrat === 'plus9') {
+                        feedback.innerHTML = `Exactement ! On a ajouté 10 au lieu de 9, donc on enlève 1. ✨`;
+                    } else if (g.activeStrat === 'plus8') {
+                        feedback.innerHTML = `Exactement ! On a ajouté 10 au lieu de 8, donc on enlève 2. ✨`;
+                    } else {
+                        feedback.innerHTML = `Exact ! Dans ${g.num2}, si tu enlèves ${g.complement}, il reste ${g.remainder} ! ✨`;
+                    }
+
+                    document.getElementById('guidedStep3').classList.remove('hidden');
+                    document.getElementById('inputStep3').focus();
+                } else {
+                    playSound('wrong');
+                    feedback.classList.add('bg-red-100', 'text-red-700');
+                    if (g.activeStrat === 'plus9') {
+                        feedback.innerText = `Attention : Comme on voulait faire +9 et qu'on a fait +10, il faut enlever 1 !`;
+                    } else if (g.activeStrat === 'plus8') {
+                        feedback.innerText = `Attention : Comme on voulait faire +8 et qu'on a fait +10, il faut enlever 2 !`;
+                    } else {
+                        feedback.innerText = `Attention : Si on enlève ${g.complement} dans ${g.num2}, combien il reste ?`;
+                    }
+                }
+            } else if (step === 3) {
+                const val = parseInt(document.getElementById('inputStep3').value);
+                if (val === g.total) {
+                    playSound('correct');
+                    addStars(2);
+                    guidedStreakCount++;
+                    document.getElementById('guidedStreak').innerText = `Série : ${guidedStreakCount} 🔥`;
+                    feedback.classList.add('bg-emerald-100', 'text-emerald-700');
+                    feedback.innerHTML = `EXCELLENT ! ${g.num1} + ${g.num2} = ${g.total} ! Tu as gagné 2 étoiles ! 🌟🌟`;
+                    document.getElementById('btnNextGuided').classList.remove('hidden');
+                } else {
+                    playSound('wrong');
+                    feedback.classList.add('bg-red-100', 'text-red-700');
+                    feedback.innerText = `Calcule doucement et re-essaie pour trouver le total !`;
+                }
+            }
+        }
+
+        function generateSpeedProblem() {
+            const tens = [14, 17, 19, 25, 27, 28, 36, 38, 45, 47, 58, 69];
+            const num1 = tens[Math.floor(Math.random() * tens.length)];
+            const num2 = Math.floor(Math.random() * 5) + 5; // 5 to 9
+            const total = num1 + num2;
+
+            currentSpeed = { num1, num2, total };
+
+            document.getElementById('speedMathProblem').innerText = `${num1} + ${num2}`;
+            document.getElementById('speedAnswerInput').value = '';
+            document.getElementById('speedTrickBox').classList.add('hidden');
+            document.getElementById('speedAnswerInput').focus();
+
+            // Prepare hint text
+            const nextTen = Math.ceil((num1 + 1) / 10) * 10;
+            const comp = nextTen - num1;
+            const rem = num2 - comp;
+            
+            let trickText = "";
+            if (num2 === 9) {
+                trickText = `Astuce du 9 : Fais ${num1} + 10 = ${num1 + 10}, puis enlève 1 ➡️ ${total} !`;
+            } else if (num2 === 8) {
+                trickText = `Astuce du 8 : Fais ${num1} + 10 = ${num1 + 10}, puis enlève 2 ➡️ ${total} !`;
+            } else {
+                trickText = `Astuce de la dizaine : Fais ${num1} + ${comp} = ${nextTen}, puis ajoute les ${rem} restants ➡️ ${nextTen} + ${rem} = ${total} !`;
+            }
+            document.getElementById('speedTrickText').innerText = trickText;
+        }
+
+        function checkSpeedAnswer() {
+            const input = document.getElementById('speedAnswerInput');
+            const val = parseInt(input.value);
+
+            if (val === currentSpeed.total) {
+                playSound('correct');
+                addStars(1);
+                speedScoreCount += 10;
+                document.getElementById('speedScore').innerText = `Score : ${speedScoreCount}`;
+                generateSpeedProblem();
+            } else {
+                playSound('wrong');
+                document.getElementById('speedTrickBox').classList.remove('hidden');
+                input.classList.add('bounce-short');
+                setTimeout(() => input.classList.remove('bounce-short'), 500);
+            }
+        }
+
+        function toggleSpeedHint() {
+            const box = document.getElementById('speedTrickBox');
+            box.classList.toggle('hidden');
+        }
+
+        // Initialize display on load
+        window.onload = function() {
+            updateStarDisplay();
+        };
+    </script>
+</body>
+</html>
